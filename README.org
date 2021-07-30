@@ -1,0 +1,3 @@
+#+title: consult-switch: switch directories easily in Emacs
+
+Utility functions to quickly switch between directories when finding files in Emacs.

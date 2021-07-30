@@ -35,7 +35,7 @@
 
 (defcustom consult-switch-shadow-filenames t
   "Shadow file names instead of replacing them when using
-`consult-insert-user-directory'."
+`consult-switch-directory'."
   :type 'boolean)
 
 (defun consult--directory-bookmarks ()
@@ -50,38 +50,66 @@
       (mapcar (lambda (cand) (let ((bm (bookmark-get-bookmark-record cand)))
                           (propertize (car cand) 'consult--type file-narrow)))))))
 
-(defun consult--user-directory (&optional prompt dir)
+(defcustom consult-switch-directory-sources
+  '(consult-switch-bookmark-dirs
+    consult-switch-current-dirs
+    consult-switch-project-dirs
+    consult-switch-recentf-dirs)
+  "Sources used by `consult--switch-directory'."
+  :type '(repeat symbol))
+
+(defvar consult-switch-recentf-dirs
+  `(:name "(r)ecentf dirs"
+    :narrow ?r
+    :category file
+    :face consult-file
+    :items ,(thread-last recentf-list
+              (mapcar #'file-name-directory)
+              (delete-dups)
+              (mapcar #'abbreviate-file-name)))
+  "Recentf directory source for `consult--switch-directory'.")
+
+(defvar consult-switch-bookmark-dirs
+  `(:name "(b)ookmarks"
+          :narrow ?b
+          :category bookmark
+          :face consult-file
+          :history bookmark-history
+          ;; :action ,#'bookmark-locate
+          :items ,#'consult--directory-bookmarks
+          :default t)
+  "Bookmark directory source for `consult--switch-directory'.")
+
+(defvar consult-switch-current-dirs
+  `(:name "(.)this directory/project"
+         :narrow ?.
+         :category file
+         :face consult-file
+         ;; :action ,(lambda (this-dir &optional norecord)
+         ;;            (insert (abbreviate-file-name default-directory)))
+         :items ,(let ((dir (abbreviate-file-name default-directory))
+                       (proj (project-current)))
+                   (cond ((and proj (equal dir (project-root proj))) (list dir))
+                         (proj (list dir (project-root proj)))
+                         (t (list dir)))))
+  "Current project directory for `consult--switch-directory'.")
+
+(defvar consult-switch-project-dirs
+  `(:name "(p)rojects"
+         :narrow ?p
+         :category file
+         :face consult-file
+         :history nil
+         ;; :action ,(lambda (project-dir &optional norecord)
+         ;;            (insert project-dir))
+         :items ,(lambda () (mapcar 'car project--list)))
+  "Project directory source for `consult--switch-directory'.")
+
+(defun consult--switch-directory (&optional prompt dir)
   "Return a directory chosen from bookmarks and projects."
   (or dir
       (let ((match (or dir
-                       (consult--multi
-                        `((:name "(b)ookmarks"
-                                 :narrow ?b
-                                 :category bookmark
-                                 :face consult-file
-                                 :history bookmark-history
-                                 ;; :action ,#'bookmark-locate
-                                 :items ,#'consult--directory-bookmarks
-                                 :default t)
-                          (:name "(.)this directory/project"
-                                 :narrow ?.
-                                 :category file
-                                 :face consult-file
-                                 ;; :action ,(lambda (this-dir &optional norecord)
-                                 ;;            (insert (abbreviate-file-name default-directory)))
-                                 :items ,(let ((dir (abbreviate-file-name default-directory))
-                                               (proj (project-current)))
-                                           (cond ((and proj (equal dir (project-root proj))) (list dir))
-                                                 (proj (list dir (project-root proj)))
-                                                 (t (list dir)))))
-                          (:name "(p)rojects"
-                                 :narrow ?p
-                                 :category file
-                                 :face consult-file
-                                 :history nil
-                                 ;; :action ,(lambda (project-dir &optional norecord)
-                                 ;;            (insert project-dir))
-                                 :items ,(lambda () (mapcar 'car project--list))))
+                       (consult--multi consult-switch-directory-sources
                         :prompt (or prompt "Switch directory: ")
                         :sort nil))))
         (pcase (plist-get (cdr match) :category)
@@ -90,12 +118,12 @@
 
 ;;;###autoload
 (defun find-file-in-directory (dir &optional wildcards)
-  (interactive (list (consult--user-directory "In directory: ")))
+  (interactive (list (consult--switch-directory "In directory: ")))
   (let ((default-directory dir))
     (call-interactively #'find-file)))
   
 ;;;###autoload
-(defun consult-find-from-jump-directory (&optional arg)
+(defun consult-switch-find-from-directory (&optional arg)
   "Jump to file from the current minibuffer directory."
   (interactive "P")
   (let* ((shadow-pt (overlay-end rfn-eshadow-overlay))
@@ -115,12 +143,12 @@
     (abort-recursive-edit)))
   
 ;;;###autoload
-(defun consult-insert-user-directory ()
+(defun consult-switch-directory ()
     "Choose a directory from bookmarks and projects with
 completion and insert it at point."
     (interactive)
     (let* ((file-name (file-name-nondirectory (minibuffer-contents)))
-           (new-dir (consult--user-directory))
+           (new-dir (consult--switch-directory))
            (new-full-name (concat (file-name-as-directory new-dir)
                                   file-name)))
       (when new-dir

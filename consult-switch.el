@@ -1,5 +1,31 @@
 ;; consult-file-jump.el --- consult file utils -*- lexical-binding: t -*-
 
+;; Author: Karthik Chikmagalur
+;; Maintainer: Karthik Chikmagalur <mail@daniel-mendler.de>
+;; Created: 2021
+;; Version: 0.1
+;; Package-Requires: ((emacs "26.1"))
+;; Homepage: https://github.com/karthink/consult-switch
+
+;; This program is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; Consult-Switch implements commands to easily switch between "active"
+;; directories when finding files from the minibuffer. (The default-directory is
+;; not changed in the process.)
+
 (eval-when-compile
   (require 'cl-lib)
   (require 'subr-x))
@@ -30,20 +56,24 @@
       (let ((match (or dir
                        (consult--multi
                         `((:name "(b)ookmarks"
-                                 :narrow 98
+                                 :narrow ?b
                                  :category bookmark
                                  :face consult-file
                                  :history bookmark-history
                                  ;; :action ,#'bookmark-locate
                                  :items ,#'consult--directory-bookmarks
                                  :default t)
-                          (:name "( )This directory"
-                                 :narrow 32
+                          (:name "(.)this directory/project"
+                                 :narrow ?.
                                  :category file
                                  :face consult-file
                                  ;; :action ,(lambda (this-dir &optional norecord)
                                  ;;            (insert (abbreviate-file-name default-directory)))
-                                 :items (,(abbreviate-file-name default-directory)))
+                                 :items ,(let ((dir (abbreviate-file-name default-directory))
+                                               (proj (project-current)))
+                                           (cond ((and proj (equal dir (project-root proj))) (list dir))
+                                                 (proj (list dir (project-root proj)))
+                                                 (t (list dir)))))
                           (:name "(p)rojects"
                                  :narrow ?p
                                  :category file

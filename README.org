@@ -20,10 +20,8 @@ To use this package, bind =consult-dir= and =consult-dir-jump-file= under the =m
 
 ** Directory sources configuration:
 - To make recent directories available, turn on =recentf-mode=.
-- To make projectile projects available, turn on projectile-mode and
-configure =consult-project-root-function=. Note that Projectile is NOT required to install this package.
-- To make project.el projects available, configure
-=consult-project-root-function=.
+- To make projectile projects available, turn on projectile-mode and configure =consult-project-root-function=. Note that Projectile is NOT required to install this package.
+- To make project.el projects available, configure =consult-project-root-function=.
 
 To change directory sources or their ordering, customize =consult-dir-directory-sources=.
 

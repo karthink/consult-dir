@@ -5,6 +5,7 @@
 ;; Created: 2021
 ;; Version: 0.1
 ;; Package-Requires: ((emacs "26.1") (consult "0.9"))
+;; Keywords: convenience
 ;; Homepage: https://github.com/karthink/consult-dir
 ;;
 ;; This file is not part of GNU Emacs.
@@ -130,11 +131,12 @@ Used to avoid duplicating source entries in
 The table is stored in `consult-dir--project-list-hash'."
   (or consult-dir--project-list-hash
       (setq consult-dir--project-list-hash
-            (consult--string-hash (delq nil (if (bound-and-true-p projectile-mode)
-                                                (progn (projectile-load-known-projects)
-                                                       projectile-known-projects)
-                                              (project--ensure-read-project-list)
-                                              (mapcar #'car project--list)))))))
+            (when consult-project-root-function
+              (consult--string-hash (delq nil (if (bound-and-true-p projectile-mode)
+                                                  (progn (projectile-load-known-projects)
+                                                         projectile-known-projects)
+                                                (project--ensure-read-project-list)
+                                                (mapcar #'car project--list))))))))
 
 (defun consult-dir--project-dirs ()
   "Return list of project directories."
@@ -146,7 +148,7 @@ The table is stored in `consult-dir--project-list-hash'."
 Entries that are also in the list of projects are removed."
   (let* ((current-dirs (consult-dir--default-dirs))
            (proj-hash (consult-dir--project-list))
-           (in-other-source-p (lambda (dir) (not (or (gethash dir proj-hash)
+           (in-other-source-p (lambda (dir) (not (or (and proj-hash (gethash dir proj-hash))
                                                 (member dir current-dirs))))))
     (thread-last recentf-list
       (mapcar #'file-name-directory)

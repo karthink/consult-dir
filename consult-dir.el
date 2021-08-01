@@ -64,7 +64,7 @@
 ;; `consult-project-root-function'.
 ;;
 ;; To change directory sources or their ordering, customize
-;; `consult-dir-directory-sources'.
+;; `consult-dir-sources'.
    
 ;;; Code:
 
@@ -77,20 +77,45 @@
 (require 'seq)
 (require 'consult)
 
+(declare-function projectile-load-known-projects "projectile")
+
 ;;; Declare variables for byte compiler
 
 (defvar projectile-known-projects)
 (defvar projectile-mode)
 
+(defgroup consult-dir nil
+  "Consulting `completing-read'."
+  :group 'convenience
+  :group 'minibuffer
+  :group 'consult
+  :prefix "consult-dir-")
+
 (defcustom consult-dir-shadow-filenames t
-  "Shadow file names instead of replacing them when using `consult-dir-directory'."
+  "Shadow file names instead of replacing them when using `consult-dir'."
   :type 'boolean)
 
 (defcustom consult-dir-default-command #'find-file
   "Default command to run after selecting a directory using `consult-dir'."
   :type 'function)
 
-(defcustom consult-dir-directory-sources
+(defcustom consult-dir-project-list-function #'consult-dir-project-dirs
+  "Function that returns the list of project directories.
+
+These are used as candidates for switching when using `consult-dir'.
+
+The options are
+
+1. project.el project directories (the default)
+2. projectile project directories
+3. Any user-defined function. This function should take no
+arguments and return a list of directories."
+  :type '(radio
+          (const :tag "Project.el projects" 'consult-dir-project-dirs)
+          (const :tag "Projectile projects" 'consult-dir-projectile-dirs)
+          (function :tag "User-defined function")))
+
+(defcustom consult-dir-sources
   '(consult-dir--source-bookmark
     consult-dir--source-default
     consult-dir--source-project         ;projectile if available, project.el otherwise
@@ -116,39 +141,55 @@
                           (let ((bm (bookmark-get-bookmark-record cand)))
                             (when-let ((file (alist-get 'filename bm)))
                               (file-directory-p file)))))
-      (mapcar (lambda (cand) (let ((bm (bookmark-get-bookmark-record cand)))
-                          (propertize (car cand) 'consult--type file-narrow)))))))
+      (mapcar (lambda (cand) (propertize (car cand) 'consult--type file-narrow))))))
+
+(defun consult-dir-project-dirs ()
+  "Return a list of project directories managed by project.el."
+  (project--ensure-read-project-list)
+  (mapcar #'car project--list))
+
+(defun consult-dir-projectile-dirs ()
+  "Return a list of the project directories managed by Projectile."
+  (if (not (bound-and-true-p projectile-known-projects))
+      (condition-case nil
+          (progn  (require 'projectile)
+                  (projectile-load-known-projects))
+        (error (message "Projectile projects could not be loaded.")
+               nil))
+    projectile-known-projects))
 
 (defvar consult-dir--project-list-hash nil
   "Hash to store the list of projects.
 
 Used to avoid duplicating source entries in
-`consult-dir-directory'.")
+`consult-dir'.")
 
-(defun consult-dir--project-list ()
+(defun consult-dir--project-list-make (&optional refresh)
   "Make hash table to store the list of projects.
 
-The table is stored in `consult-dir--project-list-hash'."
-  (or consult-dir--project-list-hash
-      (setq consult-dir--project-list-hash
-            (when consult-project-root-function
-              (consult--string-hash (delq nil (if (bound-and-true-p projectile-mode)
-                                                  (progn (projectile-load-known-projects)
-                                                         projectile-known-projects)
-                                                (project--ensure-read-project-list)
-                                                (mapcar #'car project--list))))))))
+The table is stored in `consult-dir--project-list-hash'. When
+REFRESH is non-nil force the hash to be rebuilt."
+  (when consult-dir-project-list-function
+    (let* ((proj-list (funcall consult-dir-project-list-function))
+           (proj-sx (sxhash proj-list)))
+      (unless (or refresh
+                  (equal proj-sx (car consult-dir--project-list-hash)))
+        (setq consult-dir--project-list-hash
+              (cons proj-sx (consult--string-hash (delq nil proj-list)))))
+      (cdr consult-dir--project-list-hash))))
 
 (defun consult-dir--project-dirs ()
   "Return list of project directories."
-  (hash-table-keys (consult-dir--project-list)))
+  (when-let ((projects (consult-dir--project-list-make)))
+    (hash-table-keys projects)))
 
 (defun consult-dir--recentf-dirs ()
   "Return list of recentf dirs.
 
 Entries that are also in the list of projects are removed."
   (let* ((current-dirs (consult-dir--default-dirs))
-           (proj-hash (consult-dir--project-list))
-           (in-other-source-p (lambda (dir) (not (or (and proj-hash (gethash dir proj-hash))
+           (proj-list-hash (consult-dir--project-list-make))
+           (in-other-source-p (lambda (dir) (not (or (and proj-list-hash (gethash dir proj-list-hash))
                                                 (member dir current-dirs))))))
     (thread-last recentf-list
       (mapcar #'file-name-directory)
@@ -190,7 +231,7 @@ Entries that are also in the list of projects are removed."
     :category file
     :face consult-file
     :history file-name-history
-    :enabled ,(lambda () consult-project-root-function)
+    :enabled ,(lambda () consult-dir-project-list-function)
     :items ,(lambda () (let ((current-dirs (consult-dir--default-dirs)))
                     (seq-filter (lambda (proj) (not (member proj current-dirs)))
                                 (consult-dir--project-dirs)))))
@@ -200,7 +241,7 @@ Entries that are also in the list of projects are removed."
   "Return a directory chosen from bookmarks and projects.
 
 Optional argument PROMPT is the prompt."
-  (let ((match (consult--multi consult-dir-directory-sources
+  (let ((match (consult--multi consult-dir-sources
                                :prompt (or prompt "Switch directory: ")
                                :sort nil)))
     (pcase (plist-get (cdr match) :category)
@@ -241,7 +282,7 @@ shadowed or deleted depending on the value of
 `consult-dir-shadow-filenames'.
 
 The list of sources for directory paths is
-`consult-dir-directory-sources', which can be customized."
+`consult-dir-sources', which can be customized."
     (interactive)
     (if (minibufferp)
       (let* ((enable-recursive-minibuffers t)

@@ -72,7 +72,6 @@
   (require 'cl-lib)
   (require 'subr-x))
 (require 'bookmark)
-(require 'project)
 (require 'recentf)
 (require 'seq)
 (require 'consult)
@@ -145,17 +144,18 @@ arguments and return a list of directories."
 
 (defun consult-dir-project-dirs ()
   "Return a list of project directories managed by project.el."
-  (project--ensure-read-project-list)
-  (mapcar #'car project--list))
+  (when (eq project--list 'unset)
+      (and (require 'project nil t)
+           (project--read-project-list)))
+  (and (consp project--list)
+       (mapcar #'car project--list)))
 
 (defun consult-dir-projectile-dirs ()
   "Return a list of the project directories managed by Projectile."
   (if (not (bound-and-true-p projectile-known-projects))
-      (condition-case nil
-          (progn  (require 'projectile)
-                  (projectile-load-known-projects))
-        (error (message "Projectile projects could not be loaded.")
-               nil))
+      (if (require 'projectile nil t)
+          (projectile-load-known-projects)
+        (error (message "Projectile projects could not be loaded.")))
     projectile-known-projects))
 
 (defvar consult-dir--project-list-hash nil

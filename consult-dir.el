@@ -252,11 +252,7 @@ Optional argument PROMPT is the prompt."
 (defun consult-dir-file-jump ()
   "Jump to file from the directory in the minibuffer prompt."
   (interactive)
-  (let* ((shadow-pt (overlay-end rfn-eshadow-overlay))
-         (mc (substring-no-properties
-              (minibuffer-contents)
-              (if shadow-pt
-                  (- shadow-pt (minibuffer-prompt-end)) 0)))
+  (let* ((mc (substitute-in-file-name (minibuffer-contents)))
          (dir (file-name-directory mc))
          (search (file-name-nondirectory mc)))
     (run-at-time 0 nil

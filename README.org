@@ -3,23 +3,23 @@
 #+attr_html: :width 800px :align center
 [[file:media/consult-dir.png]]
 
-Consult-dir implements commands to easily switch between "active" directories.
+Consult-dir allows you to easily select and switch between "active" directories.
 
-You can switch - with completion and filtering depending on your completion setup - to any directory you've visited recently, or to a project or bookmarked directory. You can do this at any time, including when using the minibuffer. The minibuffer prompt is then replaced with the directory you choose.
+You can switch - with completion and filtering provided by your completion setup - to any directory you've visited recently, or to a project or bookmarked directory. You can do this at any time, including when using the minibuffer. The minibuffer prompt is then replaced with the directory you choose.
 
 The directory candidates are collected from user bookmarks, Projectile project roots (if available), project.el project roots (if available) and recentf file locations. The =default-directory= variable is not changed in the process.
 
-=consult-dir= is composable with all Emacs commands that require you to specify directories, and with [[https://github.com/oantolin/embark][Embark actions]] on directories. See the demos section below for examples.
+=consult-dir= works with all Emacs commands that require you to specify directories, and with [[https://github.com/oantolin/embark][Embark actions]] on directories. See the demos section below for examples.
 
 * Usage
-Call =consult-dir= from the minibuffer to choose a directory with completion and insert it into the minibuffer prompt, shadowing or deleting any existing directory. The file name input is retained. This lets the user switch to distant directories very quickly when finding files, for instance.
+Call =consult-dir= when in the minibuffer to choose a directory with completion and insert it into the minibuffer prompt, shadowing or replacing the directory path showing currently. The file name part of the text is retained. This lets the user switch to distant directories very quickly when finding files, for instance.
 
 Call =consult-dir= from a regular buffer to choose a directory with completion and then interactively find a file in that directory. The command run with this directory is configurable via =consult-dir-default-command= and defaults to =find-file=.
 
 Call =consult-dir-jump-file= from the minibuffer to asynchronously find a file anywhere under the directory that is currently in the prompt. This can be used with =consult-dir= to quickly switch directories and find files at an arbitrary depth under them. =consult-dir-jump-file= uses =consult-find= under the hood.
 
 * Setup
-To use this package, just bind =consult-dir=:
+To use this package, bind =consult-dir= as convenient:
 #+begin_src emacs-lisp
 (define-key global-map (kbd "C-x C-d") #'consult-dir)
 #+end_src
@@ -46,7 +46,7 @@ Here I use =consult-dir= to jump to one of my project directories when attaching
 
 https://user-images.githubusercontent.com/8607532/127790065-39ddc117-5e1a-4580-a009-bc0cebd71ad8.mp4
 
-In this example I combine =consult-dir= with Embark. I use =consult-dir= to specify a directory, then Embark to spawn an eshell there. I then use =consult-dir= again when tab-completing inside eshell to specify a distant directory to copy files from. Finally I then use =consult-dir= with Embark to jump to a bookmark in a window-split:
+In this example I combine =consult-dir= with Embark. I use =consult-dir= to specify a directory, then Embark to spawn an eshell there. I then use =consult-dir= again when tab-completing inside eshell to specify a distant directory to copy files from. Finally I use =consult-dir= with Embark to jump to a bookmark in a window-split:
 
 https://user-images.githubusercontent.com/8607532/127790071-4f98d212-c127-48e1-84cd-01701cd63d64.mp4
 
@@ -78,4 +78,4 @@ By default, choosing a directory using =consult-dir= when in the minibuffer resu
 
 =consult-buffer= (part of Consult) already allows you to switch to bookmarks and recentf files, so this might be sufficient for you if you need to visit a proximal set of files quickly. =consult-dir= is different in that it is composable with all Emacs commands that require you to specify a directory and thus works in more contexts.
 
-Projectile and the built-in project.el have extensive support for listing and quickly switching projects and running actions on them. =consult-dir= is more of a one-stop shop ("just get me there") for switching directories as it includes recent directories and bookmarks in the mix, allows jumping to files with =consult-dir-jump-file=, and supports running arbitrarty actions on directories using Embark. Of course, it also allows for fast directory switching when using any Emacs command that requires specifying a directory.
+Projectile and the built-in project.el have extensive support for listing and quickly switching projects and running actions on them. =consult-dir= is more of a one-stop shop ("just get me there") for switching directories as it includes recent directories and bookmarks in the mix, allows jumping to files with =consult-dir-jump-file=, and supports running arbitrarty actions on directories using Embark. Of course, it also allows for fast directory selection when using any Emacs command that requires specifying a directory.

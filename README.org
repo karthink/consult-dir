@@ -7,7 +7,7 @@ Consult-dir implements commands to easily switch between "active" directories.
 
 You can switch - with completion and filtering depending on your completion setup - to any directory you've visited recently, or to a project or bookmarked directory. You can do this at any time, including when using the minibuffer. The minibuffer prompt is then replaced with the directory you choose.
 
-The directory candidates are collected from user bookmarks, projectile project roots (if available), project.el project roots (if available) and recentf file locations. The =default-directory= variable is not changed in the process.
+The directory candidates are collected from user bookmarks, Projectile project roots (if available), project.el project roots (if available) and recentf file locations. The =default-directory= variable is not changed in the process.
 
 =consult-dir= is composable with all Emacs commands that require you to specify directories, and with [[https://github.com/oantolin/embark][Embark actions]] on directories. See the demos section below for examples.
 
@@ -33,9 +33,10 @@ Replace =minibuffer-local-completion-map= with
 - =selectrum-minibuffer-map= if you use Selectrum.
 
 * Demos
-Here I show the different directory sources, then use =consult-dir= to easily jump around the filesystem and open files. You can also use consult's narrowing feature to select a particular source. I also use =consult-dir-jump-file= to quickly drill down a directory when I don't find the file I'm looking for at the top level:
+Here I show the different directory sources using Consult's narrowing feature, then use =consult-dir= to easily jump around the filesystem and open files. I also use =consult-dir-jump-file= to quickly drill down a directory when I don't find the file I'm looking for at the top level:
 
-https://user-images.githubusercontent.com/8607532/127790046-309df054-3e89-4e3c-adcf-16ec5028ad80.mp4
+https://user-images.githubusercontent.com/8607532/127817864-57ca9ec5-af67-4ee8-9410-4758c8450c4b.mp4
+# https://user-images.githubusercontent.com/8607532/127790046-309df054-3e89-4e3c-adcf-16ec5028ad80.mp4
 
 In this demo I call =consult-grep= with a prefix argument. This requires me to specify a directory to grep inside of, so I use =consult-dir= to specify that directory:
 
@@ -53,7 +54,7 @@ https://user-images.githubusercontent.com/8607532/127790071-4f98d212-c127-48e1-8
 * Configuration
 =consult-dir= should work out of the box with no configuration needed beyond binding it to a key.
 
-However, if you use projectile or want finer control over the directories that are offered as candidates to jump to, read on.
+However, if you use Projectile or want finer control over the directories that are offered as candidates to jump to, read on.
 
 ** Directory sources configuration:
 - To make recent directories available, turn on =recentf-mode=.

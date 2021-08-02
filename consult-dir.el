@@ -209,7 +209,7 @@ Entries that are also in the list of projects are removed."
 
 (defvar consult-dir--source-bookmark
   `(:name "Bookmarks"
-    :narrow ?b
+    :narrow ?m
     :category bookmark
     :face consult-file
     :history bookmark-history

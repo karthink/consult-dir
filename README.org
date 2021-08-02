@@ -19,15 +19,16 @@ Call =consult-dir= from a regular buffer to choose a directory with completion a
 Call =consult-dir-jump-file= from the minibuffer to asynchronously find a file anywhere under the directory that is currently in the prompt. This can be used with =consult-dir= to quickly switch directories and find files at an arbitrary depth under them. =consult-dir-jump-file= uses =consult-find= under the hood.
 
 * Setup
-To use this package, bind =consult-dir= and =consult-dir-jump-file= under the =minibuffer-local-completion-map= or equivalent, and =consult-dir= to the global map.
-
+To use this package, just bind =consult-dir=:
 #+begin_src emacs-lisp
-(define-key minibuffer-local-completion-map (kbd "C-x C-d") #'consult-dir)
-(define-key minibuffer-local-completion-map (kbd "C-x C-j") #'consult-dir-jump-file)
 (define-key global-map (kbd "C-x C-d") #'consult-dir)
 #+end_src
 
-Replace =minibuffer-local-completion-map= above with
+If you want to use the file-jump functionality, you can bind =consult-dir-jump-file= in the =minibuffer-local-completion-map=.
+#+BEGIN_SRC emacs-lisp
+(define-key minibuffer-local-completion-map (kbd "C-x C-j") #'consult-dir-jump-file)
+#+END_SRC
+Replace =minibuffer-local-completion-map= with
 - =vertico-map= if you use Vertico,
 - =selectrum-minibuffer-map= if you use Selectrum.
 
@@ -56,8 +57,12 @@ However, if you use projectile or want finer control over the directories that a
 
 ** Directory sources configuration:
 - To make recent directories available, turn on =recentf-mode=.
-- To make Projectile projects available, configure =consult-project-root-function=. Note that Projectile is /not/ required to install this package.
-- Project.el projects are available by default, but you can configure =consult-project-root-function=. 
+- To make Projectile projects available, customize =consult-dir-project-list-function= or run
+  #+BEGIN_SRC emacs-lisp
+    (setq consult-dir-project-list-function #'consult-dir-projectile-dirs)
+  #+END_SRC
+  Note that Projectile is /not/ required to install this package.
+- Project.el projects are available by default, but you can customize =consult-dir-project-list-function=. Setting it to =nil= removes projects from the sources.
 
 To change directory sources or their ordering, customize =consult-dir-sources=.
 

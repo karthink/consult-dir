@@ -57,11 +57,11 @@
 ;; - To make recent directories available, turn on `recentf-mode'.
 ;;
 ;; - To make projectile projects available, turn on projectile-mode and
-;; configure `consult-project-root-function'. Note that Projectile is NOT
+;; configure `consult-dir-project-list-function'. Note that Projectile is NOT
 ;; required to install this package.
 ;;
 ;; - To make project.el projects available, configure
-;; `consult-project-root-function'.
+;; `consult-dir-project-list-function'.
 ;;
 ;; To change directory sources or their ordering, customize
 ;; `consult-dir-sources'.

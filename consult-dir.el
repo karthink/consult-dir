@@ -249,7 +249,7 @@ Optional argument PROMPT is the prompt."
       ('file (car match)))))
 
 ;;;###autoload
-(defun consult-dir-file-jump ()
+(defun consult-dir-jump-file ()
   "Jump to file from the directory in the minibuffer prompt."
   (interactive)
   (let* ((mc (substitute-in-file-name (minibuffer-contents)))

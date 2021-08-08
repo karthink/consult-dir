@@ -9,7 +9,12 @@ You can switch - with completion and filtering provided by your completion setup
 
 The directory candidates are collected from user bookmarks, Projectile project roots (if available), project.el project roots (if available) and recentf file locations. The =default-directory= variable is not changed in the process.
 
-=consult-dir= works with all Emacs commands that require you to specify directories, and with [[https://github.com/oantolin/embark][Embark actions]] on directories. See the demos section below for examples.
+=consult-dir= works with all Emacs commands that require you to specify file paths, and with [[https://github.com/oantolin/embark][Embark actions]] on files. Here I use it to select a directory when copying a file with dired:
+
+https://user-images.githubusercontent.com/8607532/128619960-a89b578c-b627-417b-b045-06bcbb178b71.mp4
+# https://user-images.githubusercontent.com/8607532/128617436-63aeafcb-02c5-4ae8-894f-9a1f6c240267.mp4
+
+See the demos section below for more examples.
 
 * Usage
 Call =consult-dir= when in the minibuffer to choose a directory with completion and insert it into the minibuffer prompt, shadowing or replacing the directory path showing currently. The file name part of the text is retained. This lets the user switch to distant directories very quickly when finding files, for instance.

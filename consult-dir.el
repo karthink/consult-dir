@@ -4,7 +4,7 @@
 ;; Maintainer: Karthik Chikmagalur <karthik.chikmagalur@gmail.com>
 ;; Created: 2021
 ;; Version: 0.1
-;; Package-Requires: ((emacs "26.1") (consult "0.9"))
+;; Package-Requires: ((emacs "26.1") (consult "0.9") (project "0.6.0"))
 ;; Keywords: convenience
 ;; Homepage: https://github.com/karthink/consult-dir
 ;;
@@ -77,11 +77,13 @@
 (require 'consult)
 
 (declare-function projectile-load-known-projects "projectile")
+(declare-function project--read-project-list "project")
 
 ;;; Declare variables for byte compiler
 
 (defvar projectile-known-projects)
 (defvar projectile-mode)
+(defvar project--list)
 
 (defgroup consult-dir nil
   "Consulting `completing-read'."
@@ -288,7 +290,7 @@ The list of sources for directory paths is
                                     file-name)))
         (when new-dir
           (if consult-dir-shadow-filenames
-              (insert (concat "/" new-full-name))
+              (insert "/" new-full-name)
             (delete-minibuffer-contents)
             (insert new-full-name))))
       (let* ((new-dir (consult-dir--pick "In directory: "))

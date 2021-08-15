@@ -141,7 +141,7 @@ arguments and return a list of directories."
       (cl-remove-if-not (lambda (cand)
                           (let ((bm (bookmark-get-bookmark-record cand)))
                             (when-let ((file (alist-get 'filename bm)))
-                              (file-directory-p file)))))
+                              (string-suffix-p "/" file)))))
       (mapcar (lambda (cand) (propertize (car cand) 'consult--type file-narrow))))))
 
 (defun consult-dir-project-dirs ()

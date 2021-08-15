@@ -9,12 +9,46 @@ You can switch - with completion and filtering provided by your completion setup
 
 The directory candidates are collected from user bookmarks, Projectile project roots (if available), project.el project roots (if available) and recentf file locations. The =default-directory= variable is not changed in the process.
 
-=consult-dir= works with all Emacs commands that require you to specify file paths, and with [[https://github.com/oantolin/embark][Embark actions]] on files. Here I use it to select a directory when copying a file with dired:
+=consult-dir= works with all Emacs commands that require you to specify file paths, and with [[https://github.com/oantolin/embark][Embark actions]] on files. Here I use it to select a distant directory when copying a file with dired:
 
 https://user-images.githubusercontent.com/8607532/128619960-a89b578c-b627-417b-b045-06bcbb178b71.mp4
 # https://user-images.githubusercontent.com/8607532/128617436-63aeafcb-02c5-4ae8-894f-9a1f6c240267.mp4
 
 See the demos section below for more examples.
+
+* Installation
+=consult-dir= is on MELPA.
+
+** With =use-package=:
+#+BEGIN_SRC emacs-lisp
+  (use-package consult-dir
+    :ensure t
+    :bind (("C-x C-d" . consult-dir)
+           :map minibuffer-local-completion-map
+           ("C-x C-d" . consult-dir)
+           ("C-x C-j" . consult-jump-file)))
+#+END_SRC
+Replace =minibuffer-local-completion-map= above with
+- =vertico-map= if you use Vertico,
+- =selectrum-minibuffer-map= if you use Selectrum.
+
+** General method
+After adding MELPA to your package archives,
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+#+END_SRC
+you can install it with =M-x package-install consult-dir= and bind =consult-dir= as convenient:
+#+begin_src emacs-lisp
+  (define-key global-map (kbd "C-x C-d") #'consult-dir)
+  (define-key minibuffer-local-completion-map (kbd "C-x C-d") #'consult-dir)
+#+end_src
+If you want to use the file-jump functionality, you can bind =consult-dir-jump-file= in the =minibuffer-local-completion-map=.
+#+BEGIN_SRC emacs-lisp
+(define-key minibuffer-local-completion-map (kbd "C-x C-j") #'consult-dir-jump-file)
+#+END_SRC
+Replace =minibuffer-local-completion-map= above with
+- =vertico-map= if you use Vertico,
+- =selectrum-minibuffer-map= if you use Selectrum.
 
 * Usage
 Call =consult-dir= when in the minibuffer to choose a directory with completion and insert it into the minibuffer prompt, shadowing or replacing the directory path showing currently. The file name part of the text is retained. This lets the user switch to distant directories very quickly when finding files, for instance.
@@ -22,20 +56,6 @@ Call =consult-dir= when in the minibuffer to choose a directory with completion 
 Call =consult-dir= from a regular buffer to choose a directory with completion and then interactively find a file in that directory. The command run with this directory is configurable via =consult-dir-default-command= and defaults to =find-file=.
 
 Call =consult-dir-jump-file= from the minibuffer to asynchronously find a file anywhere under the directory that is currently in the prompt. This can be used with =consult-dir= to quickly switch directories and find files at an arbitrary depth under them. =consult-dir-jump-file= uses =consult-find= under the hood.
-
-* Setup
-To use this package, bind =consult-dir= as convenient:
-#+begin_src emacs-lisp
-(define-key global-map (kbd "C-x C-d") #'consult-dir)
-#+end_src
-
-If you want to use the file-jump functionality, you can bind =consult-dir-jump-file= in the =minibuffer-local-completion-map=.
-#+BEGIN_SRC emacs-lisp
-(define-key minibuffer-local-completion-map (kbd "C-x C-j") #'consult-dir-jump-file)
-#+END_SRC
-Replace =minibuffer-local-completion-map= with
-- =vertico-map= if you use Vertico,
-- =selectrum-minibuffer-map= if you use Selectrum.
 
 * Demos
 Here I show the different directory sources using Consult's narrowing feature, then use =consult-dir= to easily jump around the filesystem and open files. I also use =consult-dir-jump-file= to quickly drill down a directory when I don't find the file I'm looking for at the top level:
@@ -59,7 +79,7 @@ https://user-images.githubusercontent.com/8607532/127790071-4f98d212-c127-48e1-8
 * Configuration
 =consult-dir= should work out of the box with no configuration needed beyond binding it to a key.
 
-However, if you use Projectile or want finer control over the directories that are offered as candidates to jump to, read on.
+However, only bookmarked directories and Project.el projects are displayed by default. if you use Projectile or want finer control over the directories that are offered as candidates to jump to, read on.
 
 ** Directory sources configuration:
 - To make recent directories available, turn on =recentf-mode=.

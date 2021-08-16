@@ -26,7 +26,7 @@ See the demos section below for more examples.
     :bind (("C-x C-d" . consult-dir)
            :map minibuffer-local-completion-map
            ("C-x C-d" . consult-dir)
-           ("C-x C-j" . consult-jump-file)))
+           ("C-x C-j" . consult-dir-jump-file)))
 #+END_SRC
 Replace =minibuffer-local-completion-map= above with
 - =vertico-map= if you use Vertico,

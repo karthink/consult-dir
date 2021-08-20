@@ -83,7 +83,7 @@
 
 (defvar projectile-known-projects)
 (defvar projectile-mode)
-(defvar project--list)
+(defvar project--list 'unset)
 
 (defgroup consult-dir nil
   "Consulting `completing-read'."

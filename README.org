@@ -81,16 +81,48 @@ https://user-images.githubusercontent.com/8607532/127790071-4f98d212-c127-48e1-8
 
 However, only bookmarked directories and Project.el projects are displayed by default. if you use Projectile or want finer control over the directories that are offered as candidates to jump to, read on.
 
-** Directory sources configuration:
-- To make recent directories available, turn on =recentf-mode=.
-- To make Projectile projects available, customize =consult-dir-project-list-function= or run
-  #+BEGIN_SRC emacs-lisp
-    (setq consult-dir-project-list-function #'consult-dir-projectile-dirs)
-  #+END_SRC
-  Note that Projectile is /not/ required to install this package.
-- Project.el projects are available by default, but you can customize =consult-dir-project-list-function=. Setting it to =nil= removes projects from the sources.
+** Directory sources configuration
+*** Bookmarks
+Enabled by default. To disable, customize =consult-dir-sources=.
 
-To change directory sources or their ordering, customize =consult-dir-sources=.
+*** Recent directories
+To enable, turn on recentf-mode. (=M-x recentf-mode=). Note that if you don't already use recentf-mode, the recentf directory cache will start out empty and build up over time as you use Emacs.
+
+*** Project directories (Project.el)
+Enabled by default. To disable, customize =consult-dir-project-list-function= or
+#+BEGIN_SRC emacs-lisp
+(setq consult-dir-project-list-function nil)
+#+END_SRC
+
+*** Project directories (Projectile)
+To enable, customize =consult-dir-project-list-function= or
+#+BEGIN_SRC emacs-lisp
+(setq consult-dir-project-list-function #'consult-dir-projectile-dirs)
+#+END_SRC
+
+*** Writing your own directory source
+If none of the above include directories you want to jump to, you can write your own source. Here is a source that adds directory paths provided by the shell tool [[https://github.com/clvv/fasd][Fasd]]:
+
+#+BEGIN_SRC emacs-lisp
+  ;; A function that returns a list of directories
+  (defun consult-dir--fasd-dirs ()
+    "Return list of fasd dirs."
+    (split-string (shell-command-to-string "fasd -ld") "\n" t))
+
+  ;; A consult source that calls this function
+  (defvar consult-dir--source-fasd
+    (:name     "Fasd dirs"
+     :narrow   ?f
+     :category file
+     :face     consult-file
+     :history  file-name-history
+     :enabled  ,(lambda () (executable-find "fasd"))
+     :items    ,#'consult-dir--fasd-dirs)
+    "Fasd directory source for `consult-dir'.")
+
+  ;; Adding to the list of consult-dir sources
+  (add-to-list 'consult-dir-sources 'consult-dir--source-fasd t)
+#+END_SRC
 
 ** Default =consult-dir= action
 When called from a regular buffer (/i.e/ not the minibuffer), =consult-dir= defaults to calling =find-file= after you choose a directory. You can set this to any command you would like by customizing =consult-dir-default-command=.
@@ -104,3 +136,9 @@ By default, choosing a directory using =consult-dir= when in the minibuffer resu
 =consult-buffer= (part of Consult) already allows you to switch to bookmarks and recentf files, so this might be sufficient for you if you need to visit a proximal set of files quickly. =consult-dir= is different in that it is composable with all Emacs commands that require you to specify a directory and thus works in more contexts.
 
 Projectile and the built-in project.el have extensive support for listing and quickly switching projects and running actions on them. =consult-dir= is more of a one-stop shop ("just get me there") for switching directories as it includes recent directories and bookmarks in the mix, allows jumping to files with =consult-dir-jump-file=, and supports running arbitrarty actions on directories using Embark. Of course, it also allows for fast directory selection when using any Emacs command that requires specifying a directory.
+
+* Acknowledgements
+- [[https://github.com/dmendler][Daniel Mendler]] for writing Consult and help with the code
+- [[https://github.com/oantolin][Omar Antolin Camarena]] for many suggestions on the design of consult-dir
+- [[https://old.reddit.com/r/emacs/comments/p4wk1u/consultdir_switch_directories_in_emacs_at_any_time/h936s3t/][u/harizvi]] for the code to include Fasd directories.
+

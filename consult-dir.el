@@ -138,10 +138,13 @@ arguments and return a list of directories."
   (bookmark-maybe-load-default-file)
   (let ((file-narrow ?f))
     (thread-last bookmark-alist
+      (cl-remove-if     (lambda (cand) (bookmark-get-handler cand)))
       (cl-remove-if-not (lambda (cand)
                           (let ((bm (bookmark-get-bookmark-record cand)))
                             (when-let ((file (alist-get 'filename bm)))
-                              (string-suffix-p "/" file)))))
+                              (if (file-remote-p file)
+                                  (string-suffix-p "/" file)
+                                (file-directory-p file))))))
       (mapcar (lambda (cand) (propertize (car cand) 'consult--type file-narrow))))))
 
 (defun consult-dir-project-dirs ()

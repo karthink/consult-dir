@@ -133,12 +133,18 @@ arguments and return a list of directories."
                          (root (list dir (abbreviate-file-name root)))
                          (t (list dir)))))
 
+(defun consult-dir--bookmark-filter-by-handler (cand) 
+   (let ((handler (bookmark-get-handler cand)))
+        (if (fboundp #'bmkp-dired-jump)
+            (and handler (not (eq handler #'bmkp-dired-jump)))
+            handler)))
+
 (defun consult-dir--bookmark-dirs ()
   "Return bookmarks that are directories."
   (bookmark-maybe-load-default-file)
   (let ((file-narrow ?f))
     (thread-last bookmark-alist
-      (cl-remove-if     (lambda (cand) (bookmark-get-handler cand)))
+      (cl-remove-if     #'consult-dir--bookmark-filter-by-handler)
       (cl-remove-if-not (lambda (cand)
                           (let ((bm (bookmark-get-bookmark-record cand)))
                             (when-let ((file (alist-get 'filename bm)))

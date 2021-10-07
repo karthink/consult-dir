@@ -1,4 +1,4 @@
-;;; consult-dir.el --- Consult based directory picker -*- lexical-binding: t -*-
+;;; consult-dir.el --- Insert paths into the minibuffer prompt  -*- lexical-binding: t -*-
 
 ;; Author: Karthik Chikmagalur
 ;; Maintainer: Karthik Chikmagalur <karthik.chikmagalur@gmail.com>

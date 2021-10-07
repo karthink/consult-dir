@@ -45,7 +45,7 @@
 ;; be used with `consult-dir' to quickly switch directories and find files at an
 ;; arbitrary depth under them. `consult-dir-jump-file' uses `consult-find' under
 ;; the hood.
-;; 
+;;
 ;; To use this package, bind `consult-dir' and `consult-dir-jump-file' under the
 ;; `minibuffer-local-completion-map' or equivalent, and `consult-dir' to the global map.
 ;;
@@ -65,7 +65,7 @@
 ;;
 ;; To change directory sources or their ordering, customize
 ;; `consult-dir-sources'.
-   
+
 ;;; Code:
 
 (eval-when-compile
@@ -83,7 +83,6 @@
 
 (defvar projectile-known-projects)
 (defvar projectile-mode)
-(defvar project--list 'unset)
 
 (defgroup consult-dir nil
   "Consulting `completing-read'."
@@ -149,10 +148,10 @@ arguments and return a list of directories."
 
 (defun consult-dir-project-dirs ()
   "Return a list of project directories managed by project.el."
-  (when (eq project--list 'unset)
-      (and (require 'project nil t)
-           (project--read-project-list)))
-  (and (consp project--list)
+  (unless (and (boundp 'project--list) (listp project--list))
+    (and (require 'project nil t)
+         (project--read-project-list)))
+  (and (boundp 'project--list) (consp project--list)
        (mapcar #'car project--list)))
 
 (defun consult-dir-projectile-dirs ()
@@ -268,7 +267,7 @@ Optional argument PROMPT is the prompt."
                                   (plist-get (consult--async-split-style)
                                              :initial))))))
     (abort-recursive-edit)))
-  
+
 ;;;###autoload
 (defun consult-dir ()
     "Choose a directory and act on it.

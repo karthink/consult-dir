@@ -1,20 +1,23 @@
-#+title: consult-dir: switch directories easily in Emacs
+#+title: consult-dir: insert paths into minibuffer prompts in Emacs
 
 #+attr_html: :width 800px :align center
 [[file:media/consult-dir.png]]
 
-Consult-dir allows you to easily select and switch between "active" directories.
+Consult-dir allows you to easily insert directory paths into the minibuffer prompt in Emacs.
 
-You can switch - with completion and filtering provided by your completion setup - to any directory you've visited recently, or to a project or bookmarked directory. You can do this at any time, including when using the minibuffer. The minibuffer prompt is then replaced with the directory you choose.
+When using the minibuffer, you can switch - with completion and filtering provided by your completion setup - to any directory you've visited recently, or to a project or bookmarked directory. The minibuffer prompt will be replaced with the directory you choose.
 
-The directory candidates are collected from user bookmarks, Projectile project roots (if available), project.el project roots (if available) and recentf file locations. The =default-directory= variable is not changed in the process.
+# You can do this at any time, including when using the minibuffer.
+Why would you want to do this?
 
-=consult-dir= works with all Emacs commands that require you to specify file paths, and with [[https://github.com/oantolin/embark][Embark actions]] on files. Here I use it to select a distant directory when copying a file with dired:
+To avoid "navigating" long distances when picking a file or directory in any Emacs command that requires one. Here I use it to select a distant directory when copying a file with dired:
 
 https://user-images.githubusercontent.com/8607532/128619960-a89b578c-b627-417b-b045-06bcbb178b71.mp4
 # https://user-images.githubusercontent.com/8607532/128617436-63aeafcb-02c5-4ae8-894f-9a1f6c240267.mp4
 
-See the demos section below for more examples.
+Think of it like the shell tools [[https://github.com/wting/autojump][autojump]], [[https://github.com/clvv/fasd][fasd]] or z but for Emacs. See the demos section below for many more examples. =consult-dir= works with all Emacs commands that require you to specify file paths, and with [[https://github.com/oantolin/embark][Embark actions]] on files.
+
+The directory candidates are collected from user bookmarks, Projectile project roots (if available), project.el project roots (if available) and recentf file locations. The =default-directory= variable is not changed in the process.
 
 * Installation
 =consult-dir= is on MELPA.

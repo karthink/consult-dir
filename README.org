@@ -1,5 +1,9 @@
 #+title: consult-dir: insert paths into minibuffer prompts in Emacs
 
+:BADGE:
+[[https://melpa.org/#/consult-dir][file:https://melpa.org/packages/consult-dir-badge.svg]]
+:END:
+
 #+attr_html: :width 800px :align center
 [[file:media/consult-dir.png]]
 
@@ -114,7 +118,7 @@ If none of the above include directories you want to jump to, you can write your
 
   ;; A consult source that calls this function
   (defvar consult-dir--source-fasd
-    (:name     "Fasd dirs"
+   `(:name     "Fasd dirs"
      :narrow   ?f
      :category file
      :face     consult-file

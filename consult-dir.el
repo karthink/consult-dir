@@ -123,6 +123,11 @@ arguments and return a list of directories."
   "Sources used by `consult-dir--pick'."
   :type '(repeat symbol))
 
+(defcustom consult-dir-bookmark-handlers
+  '(nil)
+  "Symbols used to filter bookmarks"
+  :type '(repeat symbol))
+
 (defun consult-dir--default-dirs ()
   "Return the default directory and project root if available."
   (let ((fulldir (expand-file-name default-directory))
@@ -132,18 +137,12 @@ arguments and return a list of directories."
                          (root (list dir (abbreviate-file-name root)))
                          (t (list dir)))))
 
-(defun consult-dir--bookmark-filter-by-handler (cand) 
-   (let ((handler (bookmark-get-handler cand)))
-        (if (fboundp #'bmkp-dired-jump)
-            (and handler (not (eq handler #'bmkp-dired-jump)))
-            handler)))
-
 (defun consult-dir--bookmark-dirs ()
   "Return bookmarks that are directories."
   (bookmark-maybe-load-default-file)
   (let ((file-narrow ?f))
     (thread-last bookmark-alist
-      (cl-remove-if     #'consult-dir--bookmark-filter-by-handler)
+      (cl-remove-if-not (lambda (cand) (member (bookmark-get-handler cand) consult-dir-bookmark-handlers)))
       (cl-remove-if-not (lambda (cand)
                           (let ((bm (bookmark-get-bookmark-record cand)))
                             (when-let ((file (alist-get 'filename bm)))
@@ -156,6 +155,7 @@ arguments and return a list of directories."
   "Return a list of project directories managed by project.el."
   (unless (and (boundp 'project--list) (listp project--list))
     (and (require 'project nil t)
+	 (fboundp #'project--read-project-list)
          (project--read-project-list)))
   (and (boundp 'project--list) (consp project--list)
        (mapcar #'car project--list)))

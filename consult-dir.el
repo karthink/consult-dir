@@ -78,6 +78,7 @@
 
 (declare-function projectile-load-known-projects "projectile")
 (declare-function project--read-project-list "project")
+(declare-function tramp-parse-sconfig "tramp")
 
 ;;; Declare variables for byte compiler
 
@@ -93,11 +94,23 @@
 
 (defcustom consult-dir-shadow-filenames t
   "Shadow file names instead of replacing them when using `consult-dir'."
+  :group 'consult-dir
   :type 'boolean)
 
 (defcustom consult-dir-default-command #'find-file
   "Default command to run after selecting a directory using `consult-dir'."
+  :group 'consult-dir
   :type 'function)
+
+(defcustom consult-dir-tramp-default-remote-path "~"
+  "Default path to use for remote directories when using `consult-dir'."
+  :group 'consult-dir
+  :type 'string)
+
+(defcustom consult-dir-tramp-local-hosts '("/sudo:root@localhost:/")
+  "A list of local hosts to include."
+  :group 'consult-dir
+  :type '(repeat string))
 
 (defcustom consult-dir-project-list-function #'consult-dir-project-dirs
   "Function that returns the list of project directories.
@@ -119,9 +132,29 @@ arguments and return a list of directories."
   '(consult-dir--source-bookmark
     consult-dir--source-default
     consult-dir--source-project         ;projectile if available, project.el otherwise
-    consult-dir--source-recentf)
+    consult-dir--source-recentf
+    consult-dir--source-tramp-local)
   "Sources used by `consult-dir--pick'."
   :type '(repeat symbol))
+
+(defun consult-dir--tramp-parse-config (config)
+  "Given a CONFIG, parse the hosts from it and return the results as a list."
+  (let ((hosts))
+    (when (and (file-exists-p config)
+               (require 'tramp nil t))
+      (dolist (cand (tramp-parse-sconfig config))
+        (let ((user (if (car cand) (concat (car cand) "@")))
+              (host (cadr cand)))
+          (when host
+            (push (concat "/" tramp-default-method
+                          ":" user host
+                          ":" consult-dir-default-remote-path)
+                  hosts))))
+      hosts)))
+
+(defun consult-dir--tramp-ssh-hosts ()
+  "Get a list of hosts from `consult-tramp-ssh-config'."
+  (consult-dir--parse-tramp-config "~/.ssh/config"))
 
 (defun consult-dir--default-dirs ()
   "Return the default directory and project root if available."
@@ -240,6 +273,24 @@ Entries that are also in the list of projects are removed."
                     (seq-filter (lambda (proj) (not (member proj current-dirs)))
                                 (consult-dir--project-dirs)))))
   "Project directory source for `consult-dir--pick'.")
+
+(defvar consult-dir--source-tramp-local
+  `(:name     "Local"
+    :narrow   ?l
+    :category file
+    :face     consult-file
+    :history  file-name-history
+    :items    ,consult-dir-tramp-local-hosts)
+  "Local host candidate source for `consult-dir'.")
+
+(defvar consult-dir--source-tramp-ssh
+  `(:name     "SSH Config"
+    :narrow   ?s
+    :category file
+    :face     consult-file
+    :history  file-name-history
+    :items    ,#'consult-dir--tramp-ssh-hosts)
+  "SSH Config candiadate source for `consult-dir'.")
 
 (defun consult-dir--pick (&optional prompt)
   "Return a directory chosen from bookmarks and projects.

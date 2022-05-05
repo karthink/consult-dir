@@ -98,9 +98,19 @@
   :type 'boolean)
 
 (defcustom consult-dir-default-command #'find-file
-  "Default command to run after selecting a directory using `consult-dir'."
+  "Command to run after selecting a directory using `consult-dir'.
+
+The default is to invoke `find-file' from the chosen
+directory. Setting it to `consult-dir-dired' will instead open
+the chosen directory in dired.
+
+Any arbitrary function (of no variables) can be specified
+instead. It is run with `default-directory' set to the directory
+chosen using `consult-dir'."
   :group 'consult-dir
-  :type 'function)
+  :type '(choice (function-item :tag "Find file" find-file)
+                 (function-item :tag "Open directory" consult-dir-dired)
+                 (function :tag "Custom function")))
 
 (defcustom consult-dir-tramp-default-remote-path "~"
   "Default path to use for remote directories when using `consult-dir'."
@@ -158,6 +168,10 @@ the documentation of `consult--multi' for details."
             (const :tag "Known ssh hosts"
                    consult-dir--source-tramp-ssh)
             (symbol :tag "Custom directory source"))))
+
+(defun consult-dir-dired ()
+    (interactive)
+    (dired default-directory))
 
 (defun consult-dir--tramp-parse-config (config)
   "Given a CONFIG, parse the hosts from it and return the results as a list."

@@ -30,7 +30,7 @@ The directory candidates are collected from user bookmarks, Projectile project r
 - [[#usage][Usage]]
 - [[#demos][Demos]]
 - [[#configuration][Configuration]]
-  - [[#directory-sources-configuration][Directory sources configuration]]
+  - [[#directory-sources][Directory sources]]
     - [[#bookmarks][Bookmarks]]
     - [[#recent-directories][Recent directories]]
     - [[#project-directories-projectel][Project directories (Project.el)]]
@@ -108,7 +108,7 @@ https://user-images.githubusercontent.com/8607532/127790071-4f98d212-c127-48e1-8
 
 However, only bookmarked directories and Project.el projects are displayed by default. if you use Projectile or want finer control over the directories that are offered as candidates to jump to, read on.
 
-** Directory sources configuration
+** Directory sources
 *** Bookmarks
 Enabled by default. To disable, customize =consult-dir-sources=.
 
@@ -196,7 +196,7 @@ If none of the above include directories you want to jump to, you can write your
 #+END_SRC
 
 ** Default =consult-dir= action
-When called from a regular buffer (/i.e/ not the minibuffer), =consult-dir= defaults to calling =find-file= after you choose a directory. You can set this to any command you would like by customizing =consult-dir-default-command=.
+When called from a regular buffer (/i.e/ not the minibuffer), =consult-dir= defaults to calling =find-file= after you choose a directory. To set it to open the directory in dired instead or to run a custom command, customize =consult-dir-default-command=.
 
 ** File name shadowing
 By default, choosing a directory using =consult-dir= when in the minibuffer results in the text already in the prompt being "shadowed" or made inactive, but you can still delete the new text to recover it. You can make the new text replace the old instead by setting =consult-dir-shadow-filenames= to =nil=.
@@ -214,3 +214,7 @@ Projectile and the built-in project.el have extensive support for listing and qu
 - [[https://old.reddit.com/r/emacs/comments/p4wk1u/consultdir_switch_directories_in_emacs_at_any_time/h936s3t/][u/harizvi]] for the code to include Fasd directories.
 - [[https://github.com/elken][Ellis Kenyő]] for the TRAMP directory sources.
 
+
+# Local Variables:
+# eval: (when (featurep 'toc-org) (toc-org-mode))
+# End:

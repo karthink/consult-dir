@@ -148,13 +148,13 @@ arguments and return a list of directories."
           (when host
             (push (concat "/" tramp-default-method
                           ":" user host
-                          ":" consult-dir-default-remote-path)
+                          ":" consult-dir-tramp-default-remote-path)
                   hosts))))
       hosts)))
 
 (defun consult-dir--tramp-ssh-hosts ()
   "Get a list of hosts from `consult-tramp-ssh-config'."
-  (consult-dir--parse-tramp-config "~/.ssh/config"))
+  (consult-dir--tramp-parse-config "~/.ssh/config"))
 
 (defun consult-dir--default-dirs ()
   "Return the default directory and project root if available."

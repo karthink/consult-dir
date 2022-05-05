@@ -23,10 +23,30 @@ Think of it like the shell tools [[https://github.com/wting/autojump][autojump]]
 
 The directory candidates are collected from user bookmarks, Projectile project roots (if available), project.el project roots (if available) and recentf file locations. The =default-directory= variable is not changed in the process.
 
+* Contents                                                               :TOC_3:
+- [[#installation][Installation]]
+  - [[#with-use-package][With =use-package=]]
+  - [[#general-method][General method]]
+- [[#usage][Usage]]
+- [[#demos][Demos]]
+- [[#configuration][Configuration]]
+  - [[#directory-sources-configuration][Directory sources configuration]]
+    - [[#bookmarks][Bookmarks]]
+    - [[#recent-directories][Recent directories]]
+    - [[#project-directories-projectel][Project directories (Project.el)]]
+    - [[#project-directories-projectile][Project directories (Projectile)]]
+    - [[#remote-hosts][Remote hosts]]
+    - [[#docker-hosts][Docker hosts]]
+    - [[#writing-your-own-directory-source][Writing your own directory source]]
+  - [[#default-consult-dir-action][Default =consult-dir= action]]
+  - [[#file-name-shadowing][File name shadowing]]
+- [[#alternatives][Alternatives]]
+- [[#acknowledgements][Acknowledgements]]
+
 * Installation
 =consult-dir= is on MELPA.
 
-** With =use-package=:
+** With =use-package=
 #+BEGIN_SRC emacs-lisp
   (use-package consult-dir
     :ensure t
@@ -192,4 +212,5 @@ Projectile and the built-in project.el have extensive support for listing and qu
 - [[https://github.com/dmendler][Daniel Mendler]] for writing Consult and help with the code
 - [[https://github.com/oantolin][Omar Antolin Camarena]] for many suggestions on the design of consult-dir
 - [[https://old.reddit.com/r/emacs/comments/p4wk1u/consultdir_switch_directories_in_emacs_at_any_time/h936s3t/][u/harizvi]] for the code to include Fasd directories.
+- [[https://github.com/elken][Ellis Kenyő]] for the TRAMP directory sources.
 

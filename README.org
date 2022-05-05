@@ -9,7 +9,7 @@
 
 Consult-dir allows you to easily insert directory paths into the minibuffer prompt in Emacs.
 
-When using the minibuffer, you can switch - with completion and filtering provided by your completion setup - to any directory you've visited recently, or to a project or bookmarked directory. The minibuffer prompt will be replaced with the directory you choose.
+When using the minibuffer, you can switch - with completion and filtering provided by your completion setup - to any directory you've visited recently, or to a project, a bookmarked directory or even a remote host via tramp. The minibuffer prompt will be replaced with the directory you choose.
 
 # You can do this at any time, including when using the minibuffer.
 Why would you want to do this?
@@ -107,6 +107,48 @@ To enable, customize =consult-dir-project-list-function= or
 (setq consult-dir-project-list-function #'consult-dir-projectile-dirs)
 #+END_SRC
 
+*** Remote hosts
+Also included are a number of sources for interacting with remote hosts via tramp, principally:
+
+- =consult-dir--source-tramp-local= for a set list of local/custom hosts (see =consult-dir-tramp-local-hosts= to customize)
+- =consult-dir--source-tramp-ssh= for a list of parsed hosts from your =~/.ssh/config=
+
+By default =ssh= is not enabled, if you wish to enable it, use the following:
+
+#+begin_src emacs-lisp
+(add-to-list 'consult-dir-sources 'consult-dir--source-tramp-ssh t)
+#+end_src
+
+Along with these, it's also possible to define a source to handle Docker containers.
+
+#+begin_src emacs-lisp
+(defun consult-dir--tramp-docker-hosts ()
+  "Get a list of hosts from docker."
+  (when (require 'docker-tramp nil t)
+    (let ((hosts)
+          (docker-tramp-use-names t))
+      (dolist (cand (docker-tramp--parse-running-containers))
+        (let ((user (unless (string-empty-p (car cand))
+                        (concat (car cand) "@")))
+              (host (car (cdr cand))))
+          (push (concat "/docker:" user host ":/") hosts)))
+      hosts)))
+
+(defvar consult-dir--source-tramp-docker
+  `(:name     "Docker"
+    :narrow   ?d
+    :category file
+    :face     consult-file
+    :history  file-name-history
+    :items    ,#'consult-dir--tramp-docker-hosts)
+  "Docker candiadate source for `consult-dir'.")
+
+;; Adding to the list of consult-dir sources
+(add-to-list 'consult-dir-sources 'consult-dir--source-tramp-docker t)
+#+end_src
+
+Then amend =consult-dir-sources= as in the above snippet to include the source you defined.
+
 *** Writing your own directory source
 If none of the above include directories you want to jump to, you can write your own source. Here is a source that adds directory paths provided by the shell tool [[https://github.com/clvv/fasd][Fasd]]:
 
@@ -142,7 +184,7 @@ By default, choosing a directory using =consult-dir= when in the minibuffer resu
 
 =consult-buffer= (part of Consult) already allows you to switch to bookmarks and recentf files, so this might be sufficient for you if you need to visit a proximal set of files quickly. =consult-dir= is different in that it is composable with all Emacs commands that require you to specify a directory and thus works in more contexts.
 
-Projectile and the built-in project.el have extensive support for listing and quickly switching projects and running actions on them. =consult-dir= is more of a one-stop shop ("just get me there") for switching directories as it includes recent directories and bookmarks in the mix, allows jumping to files with =consult-dir-jump-file=, and supports running arbitrarty actions on directories using Embark. Of course, it also allows for fast directory selection when using any Emacs command that requires specifying a directory.
+Projectile and the built-in project.el have extensive support for listing and quickly switching projects and running actions on them. =consult-dir= is more of a one-stop shop ("just get me there") for switching directories as it includes recent directories and bookmarks in the mix, allows jumping to files with =consult-dir-jump-file=, and supports running arbitrary actions on directories using Embark. Of course, it also allows for fast directory selection when using any Emacs command that requires specifying a directory.
 
 * Acknowledgements
 - [[https://github.com/dmendler][Daniel Mendler]] for writing Consult and help with the code

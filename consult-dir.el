@@ -134,8 +134,30 @@ arguments and return a list of directories."
     consult-dir--source-project         ;projectile if available, project.el otherwise
     consult-dir--source-recentf
     consult-dir--source-tramp-local)
-  "Sources used by `consult-dir--pick'."
-  :type '(repeat symbol))
+  "Directory sources for `consult-dir'.
+
+There are several built-in sources available, including
+bookmarked directories, recently visited file locations, project
+directories and more, see customization options.
+
+You can add your own directory sources to the list. The entry
+must be a variable in the plist format specified by Consult, see
+the documentation of `consult--multi' for details."
+  :type
+  '(repeat (choice
+            (const :tag "Bookmarked directories"
+                   consult-dir--source-bookmark)
+            (const :tag "Current directory and project root"
+                   consult-dir--source-default)
+            (const :tag "All project directories"
+                   consult-dir--source-project)
+            (const :tag "Recent directories"
+                   consult-dir--source-recentf)
+            (const :tag "Local TRAMP methods"
+                   consult-dir--source-tramp-local)
+            (const :tag "Known ssh hosts"
+                   consult-dir--source-tramp-ssh)
+            (symbol :tag "Custom directory source"))))
 
 (defun consult-dir--tramp-parse-config (config)
   "Given a CONFIG, parse the hosts from it and return the results as a list."

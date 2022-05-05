@@ -113,13 +113,15 @@ Also included are a number of sources for interacting with remote hosts via tram
 - =consult-dir--source-tramp-local= for a set list of local/custom hosts (see =consult-dir-tramp-local-hosts= to customize)
 - =consult-dir--source-tramp-ssh= for a list of parsed hosts from your =~/.ssh/config=
 
-By default =ssh= is not enabled, if you wish to enable it, use the following:
+By default consult-dir does not display known SSH hosts as a separate directory source. If you wish to enable it, customize =consult-dir-sources= or use the following:
 
 #+begin_src emacs-lisp
 (add-to-list 'consult-dir-sources 'consult-dir--source-tramp-ssh t)
 #+end_src
 
-Along with these, it's also possible to define a source to handle Docker containers.
+*** Docker hosts
+
+It's also possible to define a source to switch to Docker containers using consult-dir. Note that this requires the [[https://github.com/emacs-pe/docker-tramp.el][docker-tramp]] package to be installed:
 
 #+begin_src emacs-lisp
 (defun consult-dir--tramp-docker-hosts ()

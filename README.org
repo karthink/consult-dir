@@ -172,7 +172,7 @@ It's also possible to define a source to switch to Docker containers using consu
 Then amend =consult-dir-sources= as in the above snippet to include the source you defined.
 
 *** Writing your own directory source
-If none of the above include directories you want to jump to, you can write your own source. Here is a source that adds directory paths provided by the shell tool [[https://github.com/clvv/fasd][Fasd]]:
+If none of the above include directories you want to jump to, you can write your own source. As a template, here is a source that adds paths provided by the shell tool [[https://github.com/clvv/fasd][Fasd]] to consult-dir:
 
 #+BEGIN_SRC emacs-lisp
   ;; A function that returns a list of directories
@@ -194,6 +194,8 @@ If none of the above include directories you want to jump to, you can write your
   ;; Adding to the list of consult-dir sources
   (add-to-list 'consult-dir-sources 'consult-dir--source-fasd t)
 #+END_SRC
+
+For additional directory sources, check out the [[https://github.com/karthink/consult-dir/wiki#additional-directory-sources][wiki]].
 
 ** Default =consult-dir= action
 When called from a regular buffer (/i.e/ not the minibuffer), =consult-dir= defaults to calling =find-file= after you choose a directory. To set it to open the directory in dired instead or to run a custom command, customize =consult-dir-default-command=.

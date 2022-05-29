@@ -192,6 +192,11 @@ the documentation of `consult--multi' for details."
   "Get a list of hosts from `consult-tramp-ssh-config'."
   (consult-dir--tramp-parse-config "~/.ssh/config"))
 
+(defcustom consult-dir-bookmark-handlers
+  '(nil)
+  "Symbols used to filter bookmarks"
+  :type '(repeat symbol))
+
 (defun consult-dir--default-dirs ()
   "Return the default directory and project root if available."
   (let ((fulldir (expand-file-name default-directory))
@@ -206,7 +211,7 @@ the documentation of `consult--multi' for details."
   (bookmark-maybe-load-default-file)
   (let ((file-narrow ?f))
     (thread-last bookmark-alist
-      (cl-remove-if     (lambda (cand) (bookmark-get-handler cand)))
+      (cl-remove-if-not (lambda (cand) (member (bookmark-get-handler cand) consult-dir-bookmark-handlers)))
       (cl-remove-if-not (lambda (cand)
                           (let ((bm (bookmark-get-bookmark-record cand)))
                             (when-let ((file (alist-get 'filename bm)))
@@ -219,6 +224,7 @@ the documentation of `consult--multi' for details."
   "Return a list of project directories managed by project.el."
   (unless (and (boundp 'project--list) (listp project--list))
     (and (require 'project nil t)
+	 (fboundp #'project--read-project-list)
          (project--read-project-list)))
   (and (boundp 'project--list) (consp project--list)
        (mapcar #'car project--list)))

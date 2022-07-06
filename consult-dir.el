@@ -134,8 +134,8 @@ The options are
 3. Any user-defined function. This function should take no
 arguments and return a list of directories."
   :type '(radio
-          (const :tag "Project.el projects" 'consult-dir-project-dirs)
-          (const :tag "Projectile projects" 'consult-dir-projectile-dirs)
+          (function-item :tag "Project.el projects" consult-dir-project-dirs)
+          (function-item :tag "Projectile projects" consult-dir-projectile-dirs)
           (function :tag "User-defined function")))
 
 (defcustom consult-dir-sources

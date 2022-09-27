@@ -264,8 +264,11 @@ Entries that are also in the list of projects are removed."
          (proj-list-hash (consult-dir--project-list-make))
          (in-other-source-p (lambda (dir) (not (or (and proj-list-hash (gethash dir proj-list-hash))
                                               (member dir current-dirs)))))
-         (file-directory-safe (lambda (f) (or (and (file-directory-p f) (file-name-as-directory f))
-                                         (file-name-directory f)))))
+         (file-directory-safe (lambda (f) (or (and (if (file-remote-p f)
+                                                       (string-suffix-p "/" f)
+                                                     (file-directory-p f))
+                                                   (file-name-as-directory f))
+                                              (file-name-directory f)))))
     (thread-last recentf-list
       (mapcar file-directory-safe)
       (delete-dups)

@@ -4,7 +4,7 @@
 ;; Maintainer: Karthik Chikmagalur <karthik.chikmagalur@gmail.com>
 ;; Created: 2021
 ;; Version: 0.1
-;; Package-Requires: ((emacs "26.1") (consult "0.9") (project "0.6.0"))
+;; Package-Requires: ((emacs "27.1") (consult "0.9"))
 ;; Keywords: convenience
 ;; Homepage: https://github.com/karthink/consult-dir
 ;;

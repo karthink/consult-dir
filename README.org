@@ -141,20 +141,32 @@ By default consult-dir does not display known SSH hosts as a separate directory 
 
 *** Docker hosts
 
-It's also possible to define a source to switch to Docker containers using consult-dir. Note that this requires the [[https://github.com/emacs-pe/docker-tramp.el][docker-tramp]] package to be installed:
+It's also possible to define a source to switch to containers using consult-dir. This approach will work for both =podman= and =docker= containers, so adjust as desired.
+
+If you're using Emacs 29+, you can also wrap =tramp-container--completion-function= instead.
 
 #+begin_src emacs-lisp
-(defun consult-dir--tramp-docker-hosts ()
-  "Get a list of hosts from docker."
-  (when (require 'docker-tramp nil t)
-    (let ((hosts)
-          (docker-tramp-use-names t))
-      (dolist (cand (docker-tramp--parse-running-containers))
-        (let ((user (unless (string-empty-p (car cand))
-                        (concat (car cand) "@")))
-              (host (car (cdr cand))))
-          (push (concat "/docker:" user host ":/") hosts)))
-      hosts)))
+(defcustom consult-dir--tramp-container-executable "docker"
+  "Default executable to use for querying container hosts."
+  :group 'consult-dir
+  :type 'string)
+
+(defcustom consult-dir--tramp-container-args nil
+  "Optional list of arguments to pass when querying container hosts."
+  :group 'consult-dir
+  :type '(repeat string))
+
+(defun consult-dir--tramp-container-hosts ()
+  "Get a list of hosts from a container host."
+  (cl-loop for line in (cdr
+                        (ignore-errors
+                          (apply #'process-lines consult-dir--tramp-container-executable
+                                 (append consult-dir--tramp-container-args (list "ps")))))
+           for cand = (split-string line "[[:space:]]+" t)
+           collect (let ((user (unless (string-empty-p (car cand))
+                                 (concat (car cand) "@")))
+                         (hostname (car (last cand))))
+                     (format "/docker:%s%s:/" user hostname))))
 
 (defvar consult-dir--source-tramp-docker
   `(:name     "Docker"

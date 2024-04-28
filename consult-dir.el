@@ -4,7 +4,7 @@
 ;; Maintainer: Karthik Chikmagalur <karthik.chikmagalur@gmail.com>
 ;; Created: 2021
 ;; Version: 0.1
-;; Package-Requires: ((emacs "27.1") (consult "0.9"))
+;; Package-Requires: ((emacs "27.1") (consult "1.0"))
 ;; Keywords: convenience
 ;; Homepage: https://github.com/karthink/consult-dir
 ;;
@@ -168,6 +168,17 @@ the documentation of `consult--multi' for details."
             (const :tag "Known ssh hosts"
                    consult-dir--source-tramp-ssh)
             (symbol :tag "Custom directory source"))))
+
+(defcustom consult-dir-jump-file-command 'consult-find
+  "Consult command used by `consult-dir-jump-file'.
+
+Available options are `consult-find' and `consult-fd' (both
+provided by Consult), or your own variation thereof.  It should
+possess the same signature as `consult-find'."
+  :type '(choice
+          (const :tag "Use `find'" consult-find)
+          (const :tag "Use `fd'" consult-fd)
+          (function :tag "Custom consult function")))
 
 (defun consult-dir-dired ()
     (interactive)
@@ -352,7 +363,7 @@ Optional argument PROMPT is the prompt."
          (dir (file-name-directory mc))
          (search (file-name-nondirectory mc)))
     (run-at-time 0 nil
-                 (lambda () (consult-find
+                 (lambda () (funcall consult-dir-jump-file-command
                         dir
                         (concat search
                                 (unless (string-empty-p search)

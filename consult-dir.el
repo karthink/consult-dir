@@ -180,6 +180,10 @@ possess the same signature as `consult-find'."
           (const :tag "Use `fd'" consult-fd)
           (function :tag "Custom consult function")))
 
+(defcustom consult-dir-sort-candidates nil
+  "If non nil, enable sorting of completion candidates."
+  :type 'boolean)
+
 (defun consult-dir-dired ()
     (interactive)
     (dired default-directory))
@@ -350,7 +354,7 @@ Entries that are also in the list of projects are removed."
 Optional argument PROMPT is the prompt."
   (let ((match (consult--multi consult-dir-sources
                                :prompt (or prompt "Switch directory: ")
-                               :sort nil)))
+                               :sort consult-dir-sort-candidates)))
     (pcase (plist-get (cdr match) :category)
       ('bookmark (bookmark-get-filename (car match)))
       ('file (car match)))))

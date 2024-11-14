@@ -69,8 +69,8 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'cl-lib)
   (require 'subr-x))
+(require 'cl-lib)
 (require 'bookmark)
 (require 'recentf)
 (require 'seq)
@@ -84,6 +84,7 @@
 
 (defvar projectile-known-projects)
 (defvar projectile-mode)
+(defvar tramp-default-method)
 
 (defgroup consult-dir nil
   "Consulting `completing-read'."

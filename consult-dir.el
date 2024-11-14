@@ -1,5 +1,7 @@
 ;;; consult-dir.el --- Insert paths into the minibuffer prompt  -*- lexical-binding: t -*-
 
+;; Copyright (C) 2021-2024 Free Software Foundation, Inc.
+
 ;; Author: Karthik Chikmagalur
 ;; Maintainer: Karthik Chikmagalur <karthik.chikmagalur@gmail.com>
 ;; Created: 2021

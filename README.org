@@ -223,7 +223,7 @@ By default, choosing a directory using =consult-dir= when in the minibuffer resu
 Projectile and the built-in project.el have extensive support for listing and quickly switching projects and running actions on them. =consult-dir= is more of a one-stop shop ("just get me there") for switching directories as it includes recent directories and bookmarks in the mix, allows jumping to files with =consult-dir-jump-file=, and supports running arbitrary actions on directories using Embark. Of course, it also allows for fast directory selection when using any Emacs command that requires specifying a directory.
 
 * Acknowledgements
-- [[https://github.com/dmendler][Daniel Mendler]] for writing Consult and help with the code
+- [[https://github.com/minad][Daniel Mendler]] for writing Consult and help with the code
 - [[https://github.com/oantolin][Omar Antolin Camarena]] for many suggestions on the design of consult-dir
 - [[https://old.reddit.com/r/emacs/comments/p4wk1u/consultdir_switch_directories_in_emacs_at_any_time/h936s3t/][u/harizvi]] for the code to include Fasd directories.
 - [[https://github.com/elken][Ellis Kenyő]] for the TRAMP directory sources.

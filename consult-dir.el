@@ -286,11 +286,17 @@ Entries that are also in the list of projects are removed."
                                                        (string-suffix-p "/" f)
                                                      (file-directory-p f))
                                                    (file-name-as-directory f))
-                                              (file-name-directory f)))))
+                                              (file-name-directory f))))
+         ;; Trying to abbreviate remote recent file names can cause TRAMP to
+         ;; open connections, which can be slow and interrupt the user with
+         ;; prompts. See ‘tramp-file-name-handler’.
+         (abbreviate-local-file-name (lambda (f) (if (file-remote-p f)
+                                                     f
+                                                   (abbreviate-file-name f)))))
     (thread-last recentf-list
       (mapcar file-directory-safe)
       (delete-dups)
-      (mapcar #'abbreviate-file-name)
+      (mapcar abbreviate-local-file-name)
       (seq-filter in-other-source-p))))
 
 (defvar consult-dir--source-recentf

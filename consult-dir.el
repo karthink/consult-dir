@@ -380,7 +380,7 @@ Optional argument PROMPT is the prompt."
                         dir
                         (concat search
                                 (unless (string-empty-p search)
-                                  (plist-get (consult--async-split-style)
+                                  (plist-get (consult-async-split-style)
                                              :initial))))))
     (abort-recursive-edit)))
 

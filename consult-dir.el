@@ -375,13 +375,15 @@ Optional argument PROMPT is the prompt."
          (search (file-name-nondirectory mc)))
     (run-at-time
      0 nil
-     (lambda () (funcall consult-dir-jump-file-command dir
+     (lambda ()
+       (let ((this-command consult-dir-jump-file-command))
+         (funcall consult-dir-jump-file-command dir
                     (concat search
                             (unless (string-empty-p search)
                               (when-let ((style (alist-get consult-async-split-style
                                                            consult-async-split-styles-alist))
                                          (initial (plist-get style :initial)))
-                                (char-to-string initial)))))))
+                                (char-to-string initial))))))))
     (abort-recursive-edit)))
 
 ;;;###autoload
